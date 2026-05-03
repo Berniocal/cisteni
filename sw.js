@@ -1,4 +1,4 @@
-const CACHE_NAME = "blokove-cisteni-v2";
+const CACHE_NAME = "blokove-cisteni-v3";
 const ASSETS = [
   "./",
   "./index.html",
