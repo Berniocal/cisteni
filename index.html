@@ -289,10 +289,11 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      if (!SCRIPT_URL || SCRIPT_URL.includes("https://script.google.com/macros/s/AKfycbwVnU7O5hAgO0EWgw5GwQqV7w0MBVzHKp8MjW_JwU-EA-ifOqd8M_TmwzpD0euz0F8IKw/exec")) {
-        showStatus("err", "Nejdřív v index.html doplň SCRIPT_URL z nasazené Apps Script webové aplikace.");
-        return;
-      }
+      
+if (!SCRIPT_URL || SCRIPT_URL.includes("SEM_VLOZ")) {
+  showStatus("err", "Nejdřív v index.html doplň SCRIPT_URL z nasazené Apps Script webové aplikace.");
+  return;
+}
 
       const upozorneni = getSelectedAlerts();
 
