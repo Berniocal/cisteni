@@ -268,7 +268,7 @@
       Bude vypadat asi takto:
       https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec
     */
-    const SCRIPT_URL = "SEM_VLOZ_URL_APPS_SCRIPT_WEB_APP";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwVnU7O5hAgO0EWgw5GwQqV7w0MBVzHKp8MjW_JwU-EA-ifOqd8M_TmwzpD0euz0F8IKw/exec";
 
     const form = document.getElementById("watchForm");
     const statusBox = document.getElementById("status");
@@ -289,7 +289,7 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      if (!SCRIPT_URL || SCRIPT_URL.includes("https://script.google.com/macros/s/AKfycbwDBF4XD2rJKjjZBjpKSNO9SqQ6_61yfS6Wkdj5c758U5zvow2aJ64_3szUWi7iBLjGMQ/exec")) {
+      if (!SCRIPT_URL || SCRIPT_URL.includes("https://script.google.com/macros/s/AKfycbwVnU7O5hAgO0EWgw5GwQqV7w0MBVzHKp8MjW_JwU-EA-ifOqd8M_TmwzpD0euz0F8IKw/exec")) {
         showStatus("err", "Nejdřív v index.html doplň SCRIPT_URL z nasazené Apps Script webové aplikace.");
         return;
       }
