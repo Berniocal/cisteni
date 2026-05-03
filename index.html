@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Hlídač blokového čištění</title>
+  <meta name="theme-color" content="#2f6f5e" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+
+  <style>
+    :root{
+      --bg:#eef5f1;
+      --panel:#ffffff;
+      --text:#13231d;
+      --muted:#66756f;
+      --primary:#2f6f5e;
+      --primary2:#245647;
+      --line:#d7e4de;
+      --danger:#b42318;
+      --ok:#1f7a4d;
+      --shadow:0 14px 40px rgba(23, 57, 45, .14);
+      --radius:24px;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      margin:0;
+      min-height:100%;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:radial-gradient(circle at top, #f8fffb, var(--bg));
+      color:var(--text);
+    }
+
+    body{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+    }
+
+    .app{width:min(720px,100%)}
+
+    .card{
+      background:color-mix(in srgb, var(--panel) 94%, transparent);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:26px;
+      backdrop-filter:blur(14px);
+    }
+
+    .badge{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      padding:7px 11px;
+      border-radius:999px;
+      background:#dff0e9;
+      color:#235849;
+      font-size:14px;
+      font-weight:700;
+      margin-bottom:14px;
+    }
+
+    h1{
+      margin:0 0 8px;
+      font-size:clamp(30px,6vw,46px);
+      line-height:1.04;
+      letter-spacing:-.04em;
+    }
+
+    p{
+      margin:0 0 22px;
+      color:var(--muted);
+      line-height:1.55;
+      font-size:16px;
+    }
+
+    form{
+      display:grid;
+      gap:15px;
+      margin-top:22px;
+    }
+
+    label.field{
+      display:grid;
+      gap:7px;
+      font-size:14px;
+      font-weight:800;
+      color:#203b32;
+    }
+
+    input{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:15px 15px;
+      font-size:17px;
+      background:#fff;
+      color:var(--text);
+      outline:none;
+    }
+
+    input:focus{
+      border-color:#8bbcad;
+      box-shadow:0 0 0 4px rgba(47,111,94,.13);
+    }
+
+    .hint{
+      font-size:13px;
+      font-weight:600;
+      color:var(--muted);
+    }
+
+    .checks{
+      display:grid;
+      gap:10px;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      background:#f8fcfa;
+    }
+
+    .checksTitle{
+      font-size:14px;
+      font-weight:900;
+      color:#203b32;
+      margin-bottom:2px;
+    }
+
+    .checksGrid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:10px;
+    }
+
+    @media(max-width:640px){
+      .checksGrid{grid-template-columns:1fr}
+      .card{padding:21px}
+    }
+
+    .check{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 13px;
+      border:1px solid var(--line);
+      border-radius:15px;
+      background:#fff;
+      cursor:pointer;
+      font-weight:750;
+      color:#243f36;
+    }
+
+    .check input{
+      width:20px;
+      height:20px;
+      accent-color:var(--primary);
+      flex:0 0 auto;
+    }
+
+    button{
+      border:none;
+      border-radius:18px;
+      padding:16px 18px;
+      font-size:17px;
+      font-weight:900;
+      cursor:pointer;
+      background:var(--primary);
+      color:#fff;
+      box-shadow:0 10px 24px rgba(47,111,94,.24);
+    }
+
+    button:hover{background:var(--primary2)}
+    button:disabled{opacity:.65; cursor:not-allowed}
+
+    .status{
+      display:none;
+      margin-top:16px;
+      padding:14px 15px;
+      border-radius:16px;
+      line-height:1.45;
+      font-weight:700;
+    }
+
+    .status.ok{
+      display:block;
+      background:#e4f7ee;
+      color:var(--ok);
+      border:1px solid #bee8d2;
+    }
+
+    .status.err{
+      display:block;
+      background:#fff1f0;
+      color:var(--danger);
+      border:1px solid #ffd0cc;
+    }
+
+    .small{
+      margin-top:18px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    code{
+      background:#edf4f0;
+      padding:2px 6px;
+      border-radius:8px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <section class="card">
+      <div class="badge">🚗 Žabovřesky · blokové čištění</div>
+      <h1>Hlídač blokového čištění</h1>
+      <p>
+        Zadej e-mail, ulici a vyber si klidně více upozornění najednou.
+        Například 14 dní, 7 dní, 3 dny, 2 dny, 1 den a ráno v den čištění.
+      </p>
+
+      <form id="watchForm">
+        <label class="field">
+          E-mail
+          <input id="email" name="email" type="email" placeholder="např. jan@email.cz" required autocomplete="email">
+        </label>
+
+        <label class="field">
+          Ulice
+          <input id="ulice" name="ulice" type="text" placeholder="např. Horova" required autocomplete="street-address">
+          <span class="hint">Stačí název ulice bez města. Diakritika nevadí.</span>
+        </label>
+
+        <div class="checks">
+          <div class="checksTitle">Kdy poslat e-mail?</div>
+          <div class="checksGrid">
+            <label class="check"><input type="checkbox" name="upozorneni" value="14"> 14 dní předem</label>
+            <label class="check"><input type="checkbox" name="upozorneni" value="7" checked> 7 dní předem</label>
+            <label class="check"><input type="checkbox" name="upozorneni" value="3" checked> 3 dny předem</label>
+            <label class="check"><input type="checkbox" name="upozorneni" value="2" checked> 2 dny předem</label>
+            <label class="check"><input type="checkbox" name="upozorneni" value="1" checked> 1 den předem</label>
+            <label class="check"><input type="checkbox" name="upozorneni" value="0" checked> ráno v den čištění</label>
+          </div>
+          <span class="hint">E-maily se pošlou jen jednou pro každý termín a každé vybrané upozornění.</span>
+        </div>
+
+        <button id="saveBtn" type="submit">Uložit hlídání</button>
+      </form>
+
+      <div id="status" class="status"></div>
+
+      <p class="small">
+        Před použitím doplň v tomto souboru konstantu <code>SCRIPT_URL</code>.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    /*
+      SEM VLOŽ URL WEBOVÉ APLIKACE Z GOOGLE APPS SCRIPTU.
+      Bude vypadat asi takto:
+      https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec
+    */
+    const SCRIPT_URL = "SEM_VLOZ_URL_APPS_SCRIPT_WEB_APP";
+
+    const form = document.getElementById("watchForm");
+    const statusBox = document.getElementById("status");
+    const saveBtn = document.getElementById("saveBtn");
+
+    function showStatus(type, text){
+      statusBox.className = "status " + type;
+      statusBox.textContent = text;
+    }
+
+    function getSelectedAlerts(){
+      return [...document.querySelectorAll('input[name="upozorneni"]:checked')]
+        .map(input => Number(input.value))
+        .filter(n => Number.isFinite(n))
+        .sort((a,b) => b - a);
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!SCRIPT_URL || SCRIPT_URL.includes("SEM_VLOZ")) {
+        showStatus("err", "Nejdřív v index.html doplň SCRIPT_URL z nasazené Apps Script webové aplikace.");
+        return;
+      }
+
+      const upozorneni = getSelectedAlerts();
+
+      if (!upozorneni.length) {
+        showStatus("err", "Vyber alespoň jedno upozornění.");
+        return;
+      }
+
+      const payload = {
+        email: document.getElementById("email").value.trim(),
+        ulice: document.getElementById("ulice").value.trim(),
+        upozorneni: upozorneni.join(",")
+      };
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Ukládám…";
+      showStatus("ok", "Odesílám údaje…");
+
+      try {
+        const res = await fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: {"Content-Type": "text/plain;charset=utf-8"},
+          body: JSON.stringify(payload)
+        });
+
+        const text = await res.text();
+        let data = {};
+        try { data = JSON.parse(text); } catch(err) {}
+
+        if (!res.ok || data.status !== "ok") {
+          throw new Error(data.message || text || "Nepodařilo se uložit.");
+        }
+
+        showStatus("ok", "Hotovo. Hlídání bylo uloženo do Google Tabulky.");
+        form.reset();
+
+        /*
+          Vrátíme výchozí zaškrtnutí.
+        */
+        ["7","3","2","1","0"].forEach(v => {
+          const el = document.querySelector('input[name="upozorneni"][value="' + v + '"]');
+          if (el) el.checked = true;
+        });
+      } catch (err) {
+        showStatus("err", "Chyba ukládání: " + err.message);
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = "Uložit hlídání";
+      }
+    });
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(console.warn);
+      });
+    }
+  </script>
+</body>
+</html>
