@@ -93,7 +93,8 @@
       color:#203b32;
     }
 
-    input{
+    input,
+    select{
       width:100%;
       border:1px solid var(--line);
       border-radius:16px;
@@ -104,7 +105,8 @@
       outline:none;
     }
 
-    input:focus{
+    input:focus,
+    select:focus{
       border-color:#8bbcad;
       box-shadow:0 0 0 4px rgba(47,111,94,.13);
     }
@@ -217,14 +219,23 @@
 <body>
   <main class="app">
     <section class="card">
-      <div class="badge">🚗 Žabovřesky · blokové čištění</div>
+      <div class="badge">🚗 Brno · blokové čištění</div>
       <h1>Hlídač blokového čištění</h1>
       <p>
-        Zadej e-mail, ulici a vyber si klidně více upozornění najednou.
+        Vyber městskou část, zadej e-mail, ulici a vyber si klidně více upozornění najednou.
         Například 14 dní, 7 dní, 3 dny, 2 dny, 1 den a ráno v den čištění.
       </p>
 
       <form id="watchForm">
+        <label class="field">
+          Městská část
+          <select id="mestskaCast" name="mestskaCast" required>
+            <option value="zabovresky">Žabovřesky</option>
+            <option value="kralovo-pole">Královo Pole</option>
+          </select>
+          <span class="hint">Hlídání se bude vztahovat jen na vybranou městskou část.</span>
+        </label>
+
         <label class="field">
           E-mail
           <input id="email" name="email" type="email" placeholder="např. jan@email.cz" required autocomplete="email">
@@ -265,7 +276,7 @@
       Bude vypadat asi takto:
       https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxxxxxx/exec
     */
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby65C1wSc1TKispwU_HFVbS2aiSwehR6-Lyi9PG3WNWqx96sj1hBoAstnBywq5I9hqGjg/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzOjmuUjsvSTnkT9mqLJ-0g6__iVBjnVmeiUDUZIzT1GxdJRevtorv9oec7uFJ4FrdPQQ/exec";
 
     const form = document.getElementById("watchForm");
     const statusBox = document.getElementById("status");
@@ -300,6 +311,7 @@ if (!SCRIPT_URL || SCRIPT_URL.includes("SEM_VLOZ")) {
       }
 
       const payload = {
+        mestskaCast: document.getElementById("mestskaCast").value,
         email: document.getElementById("email").value.trim(),
         ulice: document.getElementById("ulice").value.trim(),
         upozorneni: upozorneni.join(",")
@@ -326,6 +338,7 @@ if (!SCRIPT_URL || SCRIPT_URL.includes("SEM_VLOZ")) {
 
         showStatus("ok", "Hotovo. Hlídání bylo uloženo do Google Tabulky.");
         form.reset();
+        document.getElementById("mestskaCast").value = "zabovresky";
 
         /*
           Vrátíme výchozí zaškrtnutí.
